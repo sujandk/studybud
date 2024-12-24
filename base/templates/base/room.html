@@ -1,64 +1,51 @@
-{% extends 'main.html' %}
-
-{% block content %}
+{% extends 'main.html' %} {% block content %}
 
 <style>
-    .room-container{
-      display: grid;
-      grid-template-columns: 3fr 1fr;
-    }
-  </style>
+  .room-container {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+  }
+</style>
 
-<div class="room-container"> 
- 
-
-
-
-
-<div class="comment-wrapper">
+<div class="room-container">
+  <div class="comment-wrapper">
     <h1>{{room.name}}</h1>
-<p>{{room.description}}</p>
-   <h3>Conversation</h3>
-   <hr>
-   {% for message in messages %}
-     <div>
-        <small>@ {{message.user}}  {{message.created|timesince}}</small>
-        {% if request.user == message.user %}
-         <a href="{% url 'deleteMessage' message.id %}"> Delete</a>
-        {% endif %}
-         <br>
-       <p>{{message.body}}   </p> 
-       <hr>
-     </div>
-    {% endfor %}
+    <p>{{room.description}}</p>
+    <h3>Conversation</h3>
+    <hr />
+    {% for message in messages %}
+    <div>
+      <small>@ {{message.user}} {{message.created|timesince}}</small>
+      {% if request.user == message.user %}
+      <a href="{% url 'deleteMessage' message.id %}"> Delete</a>
+      {% endif %}
+      <br />
+      <p>{{message.body}}</p>
+      <hr />
+    </div>
+    {% endfor %} {% if request.user.is_authenticated %}
+    <div class="comment-form">
+      <form action="" method="POST">
+        {% csrf_token %}
+        <input
+          type="text"
+          name="body"
+          placeholder="Write your message here..."
+        />
+      </form>
+    </div>
+    {% endif %}
+  </div>
 
-
-    {% if request.user.is_authenticated %}
-   <div class="comment-form">
-    <form action="" method="POST">
-
-        {% csrf_token %} 
-       <input type="text" name="body" placeholder="Write your message here..." >
-
-    </form>
-
-   </div>
-        {% endif %}
-</div>
-
-<div>
+  <div>
     <h2>
-        Participants
+      Participants {% for user in participants%}
+      <p>@{{user.username}}</p>
 
-        {% for user in participants%}
-        <p>@{{user.username}}</p>
-        
-        {% endfor%}
-
+      {% endfor%}
     </h2>
-    <hr>
-</div>
- 
+    <hr />
+  </div>
 </div>
 
 {% endblock content %}

@@ -70,7 +70,9 @@ def home(request):
         Q(description__icontains = q ))
     topics = Topic.objects.all()
     room_counts = rooms.count()
-    contex = {'rooms' : rooms  , 'topics': topics , 'rooms_counts' : room_counts}
+    activityMessage = Message.objects.filter( Q(room__topic__name__icontains = q ) |
+        Q(room__name__icontains = q )).order_by('-created')
+    contex = {'rooms' : rooms  , 'topics': topics , 'rooms_counts' : room_counts, 'activityMessage' : activityMessage}
     return render(request , 'base/home.html' , contex)
 
 def room(request , pk):
@@ -96,8 +98,10 @@ def createRoom(request):
     if request.method == 'POST':
         form = RoomForm(request.POST)
         if form.is_valid():
-            form.save()
-            return  redirect('home')
+           room = form.save(commit=False)
+           room.host = request.user
+           room.save()
+           return  redirect('home')
     context = {'form' : form}
     return render(request, 'base/createRoom.html' , context )
 
@@ -139,4 +143,23 @@ def deleteMessage(request , pk):
     if request.method == 'POST':
         message.delete()
         return redirect('home')
-    return render(request , 'base/delete.html' , {'obj': room})
+    return render(request , 'base/delete.html' , {'obj': message})
+
+@login_required(login_url= 'loginPage')
+def deleteActivity(request , pk):
+    message = Message.objects.get(id = pk)
+    if request.user != message.user:
+        return HttpResponse('You are not allowed to update the room')
+
+    if request.method == 'POST':
+        message.delete()
+        return redirect('home')
+    return render(request , 'base/delete.html' , {'obj': message})
+
+def userProfile(request , pk):
+    user = User.objects.get(id = pk)
+    rooms = user.room_set.all()
+    activityMessage = user.message_set.all()
+    topics= Topic.objects.all()
+    context= {'user' : user , 'rooms' : rooms , 'activityMessage' : activityMessage , 'topics':topics}
+    return render(request, 'base/profile.html' , context)
