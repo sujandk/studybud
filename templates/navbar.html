@@ -1,7 +1,8 @@
+{% load static %}
 <header class="header header--loggedIn">
   <div class="container">
     <a href="{ % url 'home' %}" class="header__logo">
-      <img src="assets/logo.svg" />
+      <img src=" { % static 'images/logo.svg' %}" />
       <h1>StudyBuddy</h1>
     </a>
     <form class="header__search" method="GET" action="{% url 'home' %}">
@@ -22,20 +23,16 @@
       </label>
     </form>
     <nav class="header__menu">
-      <!-- Not Logged In -->
-      <!-- <a href="/login.html">
-            <img src="./assets/avatar.svg" />
-            <p>Login</p>
-          </a> -->
-
       <!-- Logged In -->
-
+      {% if request.user.is_authenticated %}
       <div class="header__user">
         <a href="profile.html">
           <div class="avatar avatar--medium active">
             <img src="https://randomuser.me/api/portraits/men/37.jpg" />
           </div>
-          <p>John Doe <span>@john_doe</span></p>
+          <p>
+            {{request.user.username}} <span>{{request.user.username}}</span>
+          </p>
         </a>
         <button class="dropdown-button">
           <svg
@@ -50,6 +47,15 @@
           </svg>
         </button>
       </div>
+
+      {% else %}
+      <!-- Not Logged In -->
+      <a href="{% url 'loginPage' %}">
+        <img src="./assets/avatar.svg" />
+        <p>Login</p>
+      </a>
+
+      {% endif %}
 
       <div class="dropdown-menu">
         <a href="settings.html" class="dropdown-link"
@@ -67,7 +73,7 @@
           </svg>
           Settings</a
         >
-        <a href="login.html" class="dropdown-link"
+        <a href="{% url 'logoutUser' %}" class="dropdown-link"
           ><svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -92,9 +98,9 @@
 
 <p>Hello {{request.user}}</p>
 
-{% if request.user.is_authenticated %}
+<!-- {% if request.user.is_authenticated %}
 <a href="{% url 'logoutUser' %}"> Logout </a>
 {% else %}
 <a href="{% url 'loginPage'%}">Login</a>
 {% endif %}
-<hr />
+<hr /> -->
