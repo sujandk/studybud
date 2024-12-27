@@ -79,6 +79,7 @@ def room(request , pk):
     room = Room.objects.get(id = pk)
     messages = room.message_set.all().order_by('-created')
     participants = room.participants.all()
+    topic = Topic.objects.all()
     if request.method == 'POST':
         message = Message.objects.create(
             user = request.user,
@@ -88,13 +89,14 @@ def room(request , pk):
         room.participants.add(request.user)
         return redirect('room' , pk = room.id)
 
-    context = {'room' : room , 'messages' : messages, 'participants': participants}
+    context = {'room' : room , 'messages' : messages, 'participants': participants , 'topic' : topic}
     return render(request , 'base/room.html' , context)
 
 
 @login_required(login_url= 'loginPage')
 def createRoom(request):
     form = RoomForm()
+    topic = Topic.objects.all()
     if request.method == 'POST':
         form = RoomForm(request.POST)
         if form.is_valid():
@@ -102,7 +104,7 @@ def createRoom(request):
            room.host = request.user
            room.save()
            return  redirect('home')
-    context = {'form' : form}
+    context = {'form' : form , 'topic': topic}
     return render(request, 'base/createRoom.html' , context )
 
 @login_required(login_url= 'loginPage')
