@@ -30,7 +30,7 @@
             <input type="text" required list="topic-list" name="topic" />
             <datalist id="topic-list">
               <select id="room_topic">
-                {% for topic in topics %}
+                {% for topic in topic %}
                 <option value="{{topic.name}}">{{topic.name}}</option>
                 {% endfor %}
               </select>
@@ -44,7 +44,7 @@
 
           <div class="form__group">
             <label for="room_description">Room Description</label>
-            {{form.name}}
+            {{form.description}}
           </div>
 
           <!-- 

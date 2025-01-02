@@ -98,12 +98,17 @@ def createRoom(request):
     form = RoomForm()
     topic = Topic.objects.all()
     if request.method == 'POST':
-        form = RoomForm(request.POST)
-        if form.is_valid():
-           room = form.save(commit=False)
-           room.host = request.user
-           room.save()
-           return  redirect('home')
+        topic_name= request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name = topic_name)
+
+        Room.objects.create(
+            host = request.user,
+            topic= topic,
+            name= request.POST.get('name'),
+            description = request.POST.get('description'),
+        )
+        
+        return  redirect('home')
     context = {'form' : form , 'topic': topic}
     return render(request, 'base/createRoom.html' , context )
 
