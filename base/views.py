@@ -4,10 +4,11 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators  import login_required
 from .models import Room , Topic , Message
 from django.contrib.auth.models import User
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login , logout
 from django.contrib.auth.forms import UserCreationForm
+
 # Create your views here.
 
 # rooms = [
@@ -47,7 +48,7 @@ def logoutUser(request):
 
 def registerPage(request):
     form = UserCreationForm()
-    context = {'form'  : form}
+    context = {'form'  : form , 'page' : login }
 
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -173,3 +174,15 @@ def userProfile(request , pk):
     topics= Topic.objects.all()
     context= {'user' : user , 'rooms' : rooms , 'activityMessage' : activityMessage , 'topics':topics}
     return render(request, 'base/profile.html' , context)
+
+@login_required(login_url= 'loginPage')
+def updateUser(request):
+    user = request.user
+    form = UserForm(instance= user)
+    context = {'form' : form}
+    if request.method == 'POST':
+        form = UserForm(request.POST , instance = user)
+        if form.is_valid():
+            form.save()
+            return redirect('userProfile' , pk = user.id)
+    return render(request , 'base/update-user.html' , context)

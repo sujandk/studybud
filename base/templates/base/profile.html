@@ -21,7 +21,7 @@
             <p>@{{user.username}}</p>
 
               {% if request.user.id == user.id %}
-            <a href="edit-user.html" class="btn btn--main btn--pill">Edit Profile</a>
+            <a href="{% url 'updateUser' %}" class="btn btn--main btn--pill">Edit Profile</a>
               {% endif  %}
           </div>
           <div class="profile__about">
